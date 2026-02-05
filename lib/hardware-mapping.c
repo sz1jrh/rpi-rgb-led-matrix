@@ -283,5 +283,49 @@ struct HardwareMapping matrix_hardware_mappings[] = {
   },
 #endif
 
+  /*
+   * Orange Pi Zero 2W mapping using standard 40-pin header
+   * Compatible with regular RGB matrix panels
+   * Based on Allwinner H616 SoC GPIO pins
+   */
+  {
+    .name          = "orangepi-zero2w",
+
+    .output_enable = GPIO_BIT(18),
+    .clock         = GPIO_BIT(17),
+    .strobe        = GPIO_BIT(4),
+
+    /* Address lines */
+    .a             = GPIO_BIT(22),
+    .b             = GPIO_BIT(23),
+    .c             = GPIO_BIT(24),
+    .d             = GPIO_BIT(25),
+    .e             = GPIO_BIT(15),
+
+    /* Parallel chain 0, RGB for both sub-panels */
+    .p0_r1         = GPIO_BIT(11),
+    .p0_g1         = GPIO_BIT(27),
+    .p0_b1         = GPIO_BIT(7),
+    .p0_r2         = GPIO_BIT(8),
+    .p0_g2         = GPIO_BIT(9),
+    .p0_b2         = GPIO_BIT(10),
+
+    /* Chain 1 - available on 40-pin header */
+    .p1_r1         = GPIO_BIT(12),
+    .p1_g1         = GPIO_BIT(5),
+    .p1_b1         = GPIO_BIT(6),
+    .p1_r2         = GPIO_BIT(19),
+    .p1_g2         = GPIO_BIT(13),
+    .p1_b2         = GPIO_BIT(20),
+
+    /* Chain 2 */
+    .p2_r1         = GPIO_BIT(14),
+    .p2_g1         = GPIO_BIT(2),
+    .p2_b1         = GPIO_BIT(3),
+    .p2_r2         = GPIO_BIT(26),
+    .p2_g2         = GPIO_BIT(16),
+    .p2_b2         = GPIO_BIT(21),
+  },
+
   {0}
 };

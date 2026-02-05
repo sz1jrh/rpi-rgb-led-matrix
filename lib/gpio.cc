@@ -66,6 +66,9 @@
 #define BCM2709_PERI_BASE        0x3F000000
 #define BCM2711_PERI_BASE        0xFE000000
 
+// Orange Pi Zero 2W uses Allwinner H616 SoC
+#define ALLWINNER_H616_PERI_BASE 0x03000000
+
 #define GPIO_REGISTER_OFFSET         0x200000
 #define COUNTER_1Mhz_REGISTER_OFFSET   0x3000
 
@@ -231,7 +234,8 @@ enum RaspberryPiModel {
   PI_MODEL_1,
   PI_MODEL_2,
   PI_MODEL_3,
-  PI_MODEL_4
+  PI_MODEL_4,
+  PI_MODEL_ORANGEPI_ZERO2W
 };
 
 static int ReadBinaryFileToBuffer(uint8_t *buffer, size_t size,
@@ -291,7 +295,23 @@ static uint32_t ReadRevisionFromDeviceTree() {
   return read_be32(buffer);
 }
 
+// Check if this is an Orange Pi by reading cpuinfo
+static bool IsOrangePi() {
+  char buffer[4096];
+  if (ReadTextFileToBuffer(buffer, sizeof(buffer), "/proc/cpuinfo") < 0) {
+    return false;
+  }
+  // Orange Pi Zero 2W uses Allwinner H616 SoC
+  return strstr(buffer, "sun50iw9") != NULL || strstr(buffer, "Allwinner") != NULL;
+}
+
 static RaspberryPiModel DetermineRaspberryModel() {
+  // Check if this is an Orange Pi first
+  if (IsOrangePi()) {
+    fprintf(stderr, "Detected Orange Pi Zero 2W (Allwinner H616)\n");
+    return PI_MODEL_ORANGEPI_ZERO2W;
+  }
+
   uint32_t pi_revision = ReadRevisionFromProcCpuinfo();
   if (pi_revision == 0) {
     pi_revision = ReadRevisionFromDeviceTree();
@@ -335,7 +355,10 @@ static RaspberryPiModel GetPiModel() {
 }
 
 static int GetNumCores() {
-  return GetPiModel() == PI_MODEL_1 ? 1 : 4;
+  RaspberryPiModel model = GetPiModel();
+  if (model == PI_MODEL_1) return 1;
+  if (model == PI_MODEL_ORANGEPI_ZERO2W) return 4;  // H616 has 4 cores
+  return 4;
 }
 
 static uint32_t *mmap_bcm_register(off_t register_offset) {
@@ -345,6 +368,7 @@ static uint32_t *mmap_bcm_register(off_t register_offset) {
   case PI_MODEL_2: base = BCM2709_PERI_BASE; break;
   case PI_MODEL_3: base = BCM2709_PERI_BASE; break;
   case PI_MODEL_4: base = BCM2711_PERI_BASE; break;
+  case PI_MODEL_ORANGEPI_ZERO2W: base = ALLWINNER_H616_PERI_BASE; break;
   }
 
   int mem_fd;
@@ -515,6 +539,7 @@ bool Timers::Init() {
   case PI_MODEL_2: busy_wait_impl = busy_wait_nanos_rpi_2; break;
   case PI_MODEL_3: busy_wait_impl = busy_wait_nanos_rpi_3; break;
   case PI_MODEL_4: busy_wait_impl = busy_wait_nanos_rpi_4; break;
+  case PI_MODEL_ORANGEPI_ZERO2W: busy_wait_impl = busy_wait_nanos_rpi_3; break;  // Similar to Pi3
   }
 
   DisableRealtimeThrottling();
@@ -541,6 +566,8 @@ static uint32_t JitterAllowanceMicroseconds() {
     return EMPIRICAL_NANOSLEEP_OVERHEAD_US + 35;  // 99.999%-ile
   case PI_MODEL_4:
     return EMPIRICAL_NANOSLEEP_OVERHEAD_US + 10;  // this one is fast.
+  case PI_MODEL_ORANGEPI_ZERO2W:
+    return EMPIRICAL_NANOSLEEP_OVERHEAD_US + 35;  // Similar timing to Pi3
   }
   return EMPIRICAL_NANOSLEEP_OVERHEAD_US;
 }

@@ -1,8 +1,8 @@
-Controlling RGB LED display with Raspberry Pi GPIO
+Controlling RGB LED display with Raspberry Pi and Orange Pi GPIO
 ==================================================
 
 A library to control commonly available 64x64, 32x32 or 16x32 RGB LED panels
-with the Raspberry Pi. Can support PWM up to 11Bit per channel, providing
+with the Raspberry Pi and Orange Pi Zero 2W. Can support PWM up to 11Bit per channel, providing
 true 24bpp color with CIE1931 profile.
 
 Supports 3 chains with many panels each on a regular Pi.
@@ -73,12 +73,16 @@ PWM/E-PWM/S-PWM Panels
 Newer PWM panels are not currently supported by this lib, but support would really be appreciated.
 - https://github.com/hzeller/rpi-rgb-led-matrix/issues/466 is the master bug tracking PWM efforts
 
-Raspberry Pi up to 4 supported
-------------------------------
+Raspberry Pi up to 4 and Orange Pi Zero 2W supported
+-----------------------------------------------------
 
 This library supports the old Raspberry Pi's Version 1 with 26 pin header and
 also the B+ models, the Pi Zero, Raspberry Pi 2 and 3 with 40 pins, as well
 as the Compute Modules which have 44 GPIOs.
+
+**NEW:** Orange Pi Zero 2W is now supported! The Orange Pi Zero 2W uses the Allwinner H616 SoC
+and features a 40-pin GPIO header compatible with RGB matrix panels. To use it, specify
+`--led-gpio-mapping=orangepi-zero2w` when running your programs.
 
 The Raspberry Pi 5 still needs some research into the vastly changed peripherals
 and is not yet supported. See https://github.com/hzeller/rpi-rgb-led-matrix/issues/1603#issuecomment-2624713250
@@ -87,6 +91,7 @@ and https://github.com/adafruit/Adafruit_Blinka_Raspberry_Pi5_Piomatter
 The 26 pin models can drive one chain of RGB panels, the 40 pin models
 **up to three** chains in parallel (each chain 12 or more panels long).
 The Compute Module can drive **up to 6 chains in parallel**.
+The Orange Pi Zero 2W can drive **up to three** chains in parallel, similar to Raspberry Pi 3.
 The Raspberry Pi 2 and 3 are faster and generally preferred to the older
 models (and the Pi Zero). With the faster models, the panels sometimes
 can't keep up with the speed; check out
@@ -159,6 +164,8 @@ This documentation is split into parts that help you through the process
 - <a href="wiring.md"><img src="img/wire-up-icon.png"></a>
     [**Wire up the matrix to your Pi**](./wiring.md). This document describes
     what goes where.
+- [**Orange Pi Zero 2W Support**](./ORANGEPI.md). Complete guide for using this library
+    with Orange Pi Zero 2W (Allwinner H616 SoC).
 - [How to map pixels between panels or within panels](./lib). This is crutial for figuring out pixel mappers,
   matrix mappers and so forth. This is where you will learn about panel layout with U-Mapper, V-Mapper, V-Mapper:Z
 - [Adapter GPIO boards output to up to 3 channels (electrodragon board recommended)](./adapter).
@@ -269,6 +276,7 @@ This can have values such as
   - `--led-gpio-mapping=adafruit-hat` The Adafruit HAT/Bonnet, that uses this library or
   - `--led-gpio-mapping=adafruit-hat-pwm` Adafruit HAT with the anti-flicker hardware mod [described below](#improving-flicker).
   - `--led-gpio-mapping=compute-module` Additional 3 parallel chains can be used with the Compute Module.
+  - `--led-gpio-mapping=orangepi-zero2w` Orange Pi Zero 2W with standard 40-pin GPIO header (similar to regular mapping).
 
 Learn more about the mappings in the [wiring documentation](wiring.md#alternative-hardware-mappings).
 
