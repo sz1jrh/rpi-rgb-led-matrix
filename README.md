@@ -164,6 +164,8 @@ This documentation is split into parts that help you through the process
 - <a href="wiring.md"><img src="img/wire-up-icon.png"></a>
     [**Wire up the matrix to your Pi**](./wiring.md). This document describes
     what goes where.
+- [**Orange Pi Zero 2W Support**](./ORANGEPI.md). Complete guide for using this library
+    with Orange Pi Zero 2W (Allwinner H616 SoC).
 - [How to map pixels between panels or within panels](./lib). This is crutial for figuring out pixel mappers,
   matrix mappers and so forth. This is where you will learn about panel layout with U-Mapper, V-Mapper, V-Mapper:Z
 - [Adapter GPIO boards output to up to 3 channels (electrodragon board recommended)](./adapter).
